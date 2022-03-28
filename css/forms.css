@@ -1,0 +1,18 @@
+main{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+section{
+    background-color: #dddddd;
+    border-radius: 10px;
+    padding: 3rem;
+}
+.error-text{
+    display: none;
+}
+.fieldButton input{
+    margin-top: 5px;
+    padding: 0.5rem;
+}
