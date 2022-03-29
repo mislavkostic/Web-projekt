@@ -18,9 +18,19 @@
         </ul>
     </nav>
     <main>
-       <section class="loginForm">
+       <section class="signUpForm">
         <form action="#">
             <div class="error-text">Error message!</div>
+            <div class="fieldInput">
+                <label>First Name</label>
+                <br>
+                <input type="text" placeholder="Enter your first name">
+            </div>
+            <div class="fieldInput">
+                <label>Last Name</label>
+                <br>
+                <input type="text" placeholder="Enter your last name">
+            </div>
             <div class="fieldInput">
                 <label>Email Adress</label>
                 <br>
@@ -31,14 +41,24 @@
                 <br>
                 <input type="password" placeholder="Enter your password">
             </div>
+            <div class="fieldInput">
+                <label>Confirm Password</label>
+                <br>
+                <input type="password" placeholder="Enter your password">
+            </div>
+            <div class="fieldInput">
+                <label>Profile Picture</label>
+                <br>
+                <input type="file" accept="image/*" >
+            </div>
             <div class="fieldButton">
-               
                 <input type="submit" value="Login">
             </div>
         </form>
-        <div class="link">No account yet? <a href="signup.html">Sign up now</a></div>
+        <div class="link">Already have an account? <a href="login.html">Login now</a></div>
        </section>
     </main>
+    
     
 </body>
 </html>
