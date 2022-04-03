@@ -36,3 +36,11 @@ nav ul li a{
 nav li:hover{
     background-color: #555;
 }
+.about{
+    color: white;
+    font-size: large;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}

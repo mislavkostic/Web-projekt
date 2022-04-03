@@ -10,5 +10,5 @@
 Aplikacija će sadržavati sljedeće:
 - forme za prijavu i registraciju
 - sobu za chat koja je dostupna nakon uspješne prijave korisnika te u kojoj se nalaze svi registrirani korisnici
-- korisnicima će biti omogućeno razmjenjivati poruke u zasebnim sobama (razgovor između dva korisnika)
+- korisnicima će biti omogućeno razmjenjivati poruke u zasebnim sobama (razgovor između dva korisnika) ili će se sve odvijati unutar javne sobe (razgovor između svih korisnika)
 - mogućnost uređivanja profila i slično
