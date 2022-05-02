@@ -26,10 +26,20 @@ nav li:hover{
 .chat-title{
     text-align: center;
 }
-
-.chat-window{
+.chat-room{
     margin-left: 25%;
     margin-right: 25%;
+    display: flex;
+}
+#user-names{
+    width: 25%;
+    background-color: #d9d9d9;
+    border: 1px solid black;
+    border-bottom: none;
+    border-right: none;
+}
+.chat-window{
+    width: 100%;
     max-height: 500px;
     overflow-y: scroll;
     border: 1px solid black;

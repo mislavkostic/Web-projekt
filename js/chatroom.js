@@ -1,7 +1,10 @@
 //TODO: refactor code duplicates
 
 let htmlBody = document.querySelector('body')
-
+let chatRoom = document.createElement('div')
+chatRoom.className = "chat-room"
+let users = document.getElementById('user-names')
+chatRoom.appendChild(users)
 let chatTitle = document.createElement('div')
 chatTitle.innerText = "Bubbles"
 chatTitle.className = "chat-title"
@@ -25,20 +28,18 @@ let buttonSendMessage = document.createElement('button')
 buttonSendMessage.innerText = "Send"
 buttonSendMessage.addEventListener('click',() =>{
     addNewMessage()
-    chatWindow.scrollTop = chatWindow.scrollHeight;
 })
-
-htmlBody.appendChild(chatTitle)
-htmlBody.appendChild(chatWindow)
+chatRoom.appendChild(chatWindow)
 inputBox.appendChild(inputMessage)
 inputBox.appendChild(buttonSendMessage)
+htmlBody.appendChild(chatTitle)
+htmlBody.appendChild(chatRoom)
 htmlBody.appendChild(inputBox)
 
 document.addEventListener('keypress',(e) =>{
     if(e.key === "Enter"){
         if(e.target.className == "message-input"){
             addNewMessage()
-            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     }
  
