@@ -28,6 +28,7 @@ let buttonSendMessage = document.createElement('button')
 buttonSendMessage.innerText = "Send"
 buttonSendMessage.addEventListener('click',() =>{
     addNewMessage()
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 })
 chatRoom.appendChild(chatWindow)
 inputBox.appendChild(inputMessage)
@@ -40,6 +41,7 @@ document.addEventListener('keypress',(e) =>{
     if(e.key === "Enter"){
         if(e.target.className == "message-input"){
             addNewMessage()
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     }
  
