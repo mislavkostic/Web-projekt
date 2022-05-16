@@ -19,41 +19,40 @@
     </nav>
     <main>
        <section class="signUpForm">
-        <form action="#">
-            <div class="error-text">Error message!</div>
+        <form action="#" id="signup-form">
             <div class="fieldInput">
                 <label>First Name</label>
                 <br>
-                <input type="text" placeholder="Enter your first name">
+                <input type="text" id="signup-fname" placeholder="Enter your first name" required>
             </div>
             <div class="fieldInput">
                 <label>Last Name</label>
                 <br>
-                <input type="text" placeholder="Enter your last name">
+                <input type="text" id="signup-lname" placeholder="Enter your last name" required>
             </div>
             <div class="fieldInput">
                 <label>Email Adress</label>
                 <br>
-                <input type="email" placeholder="Enter your email">
+                <input type="email" id="signup-email" placeholder="Enter your email" required>
             </div>
             <div class="fieldInput">
                 <label>Password</label>
                 <br>
-                <input type="password" placeholder="Enter your password">
+                <input type="password" id="signup-password" placeholder="Enter your password" required>
             </div>
             <div class="fieldInput">
                 <label>Confirm Password</label>
                 <br>
-                <input type="password" placeholder="Enter your password">
+                <input type="password" id="signup-cpassword" placeholder="Enter your password" required>
             </div>
             <div class="fieldButton">
-                <input type="submit" value="Sign up">
+                <input type="submit" id="signup-btn" value="Sign up">
             </div>
         </form>
         <div class="link">Already have an account? <a href="login.html">Login now</a></div>
        </section>
     </main>
     <script type="module" src="/js/firebase.js"></script>
-    
+    <script type="module" src="/js/signup.js"></script>
 </body>
 </html>

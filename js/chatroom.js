@@ -1,4 +1,6 @@
 //TODO: refactor code duplicates
+import {auth} from './firebase.js'
+import {db} from './firebase.js'
 
 let htmlBody = document.querySelector('body')
 let chatRoom = document.createElement('div')
