@@ -19,21 +19,19 @@
     </nav>
     <main>
        <section class="loginForm">
-        <form action="#">
-            <div class="error-text">Error message!</div>
+        <form action="#" id="login-form">
             <div class="fieldInput">
                 <label>Email Adress</label>
                 <br>
-                <input type="email" placeholder="Enter your email">
+                <input type="email" id="login-email" placeholder="Enter your email" required>
             </div>
             <div class="fieldInput">
                 <label>Password</label>
                 <br>
-                <input type="password" placeholder="Enter your password">
+                <input type="password" id="login-password" placeholder="Enter your password" required>
             </div>
             <div class="fieldButton">
-               
-                <a href="chatroom.html"><input type="button" value="Login"></a>
+            <input type="submit" id="login-btn" value="Login">
             </div>
         </form>
         <div class="link">No account yet? <a href="signup.html">Sign up now</a></div>

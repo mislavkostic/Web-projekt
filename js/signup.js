@@ -1,6 +1,6 @@
 import {auth} from './firebase.js'
 import {db} from './firebase.js'
-import {signInWithEmailAndPassword,createUserWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+import {createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 import { doc, setDoc} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
 const firstName = document.getElementById('signup-fname')
 const lastName = document.getElementById('signup-lname')
@@ -15,11 +15,17 @@ signupForm.addEventListener("submit",(e) =>{
     if(confirmedPassword.value == password.value){
         createUserWithEmailAndPassword(auth,email.value,password.value).then(() => {
             // Signed in 
-            var currentUser = auth.currentUser
+            alert("Korisnik uspješno registriran")
+            signupForm.reset()
             // ...
           })
           .catch((error) => {
-            window.alert(error.message);
+            alert(error.message)
           });
     }
+    signOut(auth).then(() => {
+        console.log("Odjavljen korisnik")
+    }).catch((error) => {
+      alert(error.message)
+    });
 })
