@@ -1,9 +1,29 @@
-//TODO: refactor code duplicates
+//TODO: refactor code duplicates, add collections messages, fix user list 
 import { auth } from './firebase.js'
 import { db } from './firebase.js'
-import { signOut } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 
 let htmlBody = document.querySelector('body')
+let userList = document.getElementById('user-list')
+let userDisplay = document.createElement('li')
+let userDiv = document.createElement('div')
+let profImg = document.createElement('img')
+profImg.src = "../images/default-profile-pic.png"
+profImg.style.height = "20px"
+profImg.style.width = "20px"
+let nameUser= document.createElement('label')
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        //Logged in...
+        nameUser.innerHTML= `${user.displayName}`
+        userDiv.appendChild(profImg)
+        userDiv.appendChild(nameUser)
+        userDisplay.appendChild(userDiv)
+        userList.appendChild(userDisplay)
+    } else {
+        //Logged out...
+    }
+});
 let chatRoom = document.createElement('div')
 chatRoom.className = "chat-room"
 let users = document.getElementById('user-names')
@@ -53,12 +73,27 @@ document.addEventListener('keypress', (e) => {
 function addNewMessage() {
     let messageDiv = document.createElement('div')
     messageDiv.className = "message-div"
-    let message = document.createElement('p')
+    let profileImg = document.createElement('img')
+    profileImg.src = "../images/default-profile-pic.png"
+    profileImg.style.height = "20px"
+    profileImg.style.width = "20px"
+    let fullName= document.createElement('label')
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            //Logged in...
+            fullName.innerHTML= `${user.displayName}: `
+        } else {
+            //Logged out...
+        }
+    });
+    let message = document.createElement('label')
     message.className = "message-p"
     message.innerText = inputMessage.value
     if (!message.innerText) {
         return
     }
+    messageDiv.appendChild(profileImg)
+    messageDiv.appendChild(fullName)
     messageDiv.appendChild(message)
     messageBox.appendChild(messageDiv)
     inputMessage.value = ""

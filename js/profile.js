@@ -7,7 +7,7 @@ let inputPicture = document.querySelector('input')
 const firstName = document.getElementById('firstName')
 const lastName = document.getElementById('lastName')
 const email = document.getElementById('email')
-
+//TODO photoURL 
 onAuthStateChanged(auth, (user) => {
     if (user) {
         //Logged in...
