@@ -1,6 +1,7 @@
 //TODO: refactor code duplicates, add collections messages, fix user list 
 import { auth } from './firebase.js'
 import { db } from './firebase.js'
+import { doc, collection, setDoc, addDoc, deleteDoc, query, onSnapshot } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
 import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 
 let htmlBody = document.querySelector('body')
@@ -11,15 +12,30 @@ let profImg = document.createElement('img')
 profImg.src = "../images/default-profile-pic.png"
 profImg.style.height = "20px"
 profImg.style.width = "20px"
-let nameUser= document.createElement('label')
+let nameUser = document.createElement('label')
+
 onAuthStateChanged(auth, (user) => {
     if (user) {
         //Logged in...
-        nameUser.innerHTML= `${user.displayName}`
-        userDiv.appendChild(profImg)
-        userDiv.appendChild(nameUser)
-        userDisplay.appendChild(userDiv)
-        userList.appendChild(userDisplay)
+        setDoc(doc(db, "users", user.uid), {
+            user_name: user.displayName
+        });
+
+        const q = query(collection(db, "users"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            querySnapshot.forEach((user) => {
+                nameUser.innerHTML = user.data().user_name
+                userDiv.appendChild(profImg)
+                userDiv.appendChild(nameUser)
+                userDisplay.appendChild(userDiv)
+                userList.appendChild(userDisplay)
+            });
+        });
+        //nameUser.innerHTML = `${user.displayName}`
+        //userDiv.appendChild(profImg)
+        //userDiv.appendChild(nameUser)
+        //userDisplay.appendChild(userDiv)
+        //userList.appendChild(userDisplay)
     } else {
         //Logged out...
     }
@@ -77,15 +93,8 @@ function addNewMessage() {
     profileImg.src = "../images/default-profile-pic.png"
     profileImg.style.height = "20px"
     profileImg.style.width = "20px"
-    let fullName= document.createElement('label')
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            //Logged in...
-            fullName.innerHTML= `${user.displayName}: `
-        } else {
-            //Logged out...
-        }
-    });
+    let fullName = document.createElement('label')
+
     let message = document.createElement('label')
     message.className = "message-p"
     message.innerText = inputMessage.value
@@ -96,12 +105,30 @@ function addNewMessage() {
     messageDiv.appendChild(fullName)
     messageDiv.appendChild(message)
     messageBox.appendChild(messageDiv)
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            //Logged in...
+            fullName.innerHTML = `${user.displayName}: `
+
+            addDoc(collection(db, "messages"), {
+                text: message.innerText,
+                timestamp: Date.now(),
+                user_id: user.uid,
+            });
+        } else {
+            //Logged out...
+        }
+    });
+
     inputMessage.value = ""
 }
 
 const logout = document.getElementById('logout')
 logout.addEventListener('click', (e) => {
     e.preventDefault()
+    let usr = auth.currentUser
+    deleteDoc(doc(db, "users", usr.uid))
     signOut(auth).then(() => {
         location.replace("../html/login.html")
     }).catch((error) => {
