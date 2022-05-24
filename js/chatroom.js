@@ -6,13 +6,13 @@ import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 
 let htmlBody = document.querySelector('body')
 let userList = document.getElementById('user-list')
-let userDisplay = document.createElement('li')
-let userDiv = document.createElement('div')
-let profImg = document.createElement('img')
-profImg.src = "../images/default-profile-pic.png"
-profImg.style.height = "20px"
-profImg.style.width = "20px"
-let nameUser = document.createElement('label')
+    //let userDisplay = document.createElement('li')
+    //let userDiv = document.createElement('div')
+    //let profImg = document.createElement('img')
+    // profImg.src = "../images/default-profile-pic.png"
+    // profImg.style.height = "20px"
+    // profImg.style.width = "20px"
+    //let nameUser = document.createElement('label')
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -21,13 +21,27 @@ onAuthStateChanged(auth, (user) => {
             user_name: user.displayName
         });
 
-        const q = query(collection(db, "users"));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            querySnapshot.forEach((user) => {
+        const users = query(collection(db, "users"));
+        onSnapshot(users, (usersSnapshot) => {
+
+            userList.innerHTML = ""
+
+            usersSnapshot.forEach((user) => {
+
+                let userDisplay = document.createElement('li')
+                let userDiv = document.createElement('div')
+                let nameUser = document.createElement('label')
                 nameUser.innerHTML = user.data().user_name
+
+                //img
+                let profImg = document.createElement('img')
+                profImg.src = "../images/default-profile-pic.png"
+                profImg.style.height = "20px"
+                profImg.style.width = "20px"
+
                 userDiv.appendChild(profImg)
                 userDiv.appendChild(nameUser)
-                userDisplay.appendChild(userDiv)
+                userDisplay.append(userDiv)
                 userList.appendChild(userDisplay)
             });
         });
@@ -127,8 +141,7 @@ function addNewMessage() {
 const logout = document.getElementById('logout')
 logout.addEventListener('click', (e) => {
     e.preventDefault()
-    let usr = auth.currentUser
-    deleteDoc(doc(db, "users", usr.uid))
+    onAuthStateChanged(auth, (user) => { deleteDoc(doc(db, "users", user.uid)) });
     signOut(auth).then(() => {
         location.replace("../html/login.html")
     }).catch((error) => {
