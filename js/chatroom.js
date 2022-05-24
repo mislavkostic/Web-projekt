@@ -1,18 +1,10 @@
-//TODO: refactor code duplicates, add collections messages, fix user list 
 import { auth } from './firebase.js'
 import { db } from './firebase.js'
-import { doc, collection, setDoc, addDoc, deleteDoc, query, onSnapshot } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
+import { doc, collection, setDoc, addDoc, deleteDoc, query, onSnapshot, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
 import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 
 let htmlBody = document.querySelector('body')
 let userList = document.getElementById('user-list')
-    //let userDisplay = document.createElement('li')
-    //let userDiv = document.createElement('div')
-    //let profImg = document.createElement('img')
-    // profImg.src = "../images/default-profile-pic.png"
-    // profImg.style.height = "20px"
-    // profImg.style.width = "20px"
-    //let nameUser = document.createElement('label')
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -21,19 +13,16 @@ onAuthStateChanged(auth, (user) => {
             user_name: user.displayName
         });
 
+        //users in chat
         const users = query(collection(db, "users"));
         onSnapshot(users, (usersSnapshot) => {
-
             userList.innerHTML = ""
-
             usersSnapshot.forEach((user) => {
-
                 let userDisplay = document.createElement('li')
                 let userDiv = document.createElement('div')
                 let nameUser = document.createElement('label')
                 nameUser.innerHTML = user.data().user_name
 
-                //img
                 let profImg = document.createElement('img')
                 profImg.src = "../images/default-profile-pic.png"
                 profImg.style.height = "20px"
@@ -45,15 +34,68 @@ onAuthStateChanged(auth, (user) => {
                 userList.appendChild(userDisplay)
             });
         });
-        //nameUser.innerHTML = `${user.displayName}`
-        //userDiv.appendChild(profImg)
-        //userDiv.appendChild(nameUser)
-        //userDisplay.appendChild(userDiv)
-        //userList.appendChild(userDisplay)
+
+        //--------------- chat messages ----------------
+        const q = query(collection(db, "messages"), orderBy("timestamp"));
+        onSnapshot(q, (messages) => {
+            messages.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    console.log(change.doc.data());
+                    let messageDiv = document.createElement('div')
+                    messageDiv.className = "message-div"
+
+                    let profileImg = document.createElement('img')
+                    profileImg.src = "../images/default-profile-pic.png"
+                    profileImg.style.height = "20px"
+                    profileImg.style.width = "20px"
+
+                    let fullName = document.createElement('label')
+                    fullName.innerHTML = `${change.doc.data().user}: `
+
+                    let message = document.createElement('label')
+                    message.className = "message-p"
+                    message.innerText = change.doc.data().text
+
+                    messageDiv.appendChild(profileImg)
+                    messageDiv.appendChild(fullName)
+                    messageDiv.appendChild(message)
+                    messageBox.appendChild(messageDiv)
+                }
+            });
+        });
     } else {
         //Logged out...
     }
+
 });
+
+async function getMessages() {
+    const msgCollection = query(collection(db, "messages"), orderBy("timestamp"))
+    const messages = await getDocs(msgCollection)
+    messages.forEach((doc) => {
+        let messageDiv = document.createElement('div')
+        messageDiv.className = "message-div"
+
+        let profileImg = document.createElement('img')
+        profileImg.src = "../images/default-profile-pic.png"
+        profileImg.style.height = "20px"
+        profileImg.style.width = "20px"
+
+        let fullName = document.createElement('label')
+        fullName.innerHTML = `${doc.data().user}: `
+
+        let message = document.createElement('label')
+        message.className = "message-p"
+        message.innerText = doc.data().text
+
+        messageDiv.appendChild(profileImg)
+        messageDiv.appendChild(fullName)
+        messageDiv.appendChild(message)
+        messageBox.appendChild(messageDiv)
+    })
+}
+
+
 let chatRoom = document.createElement('div')
 chatRoom.className = "chat-room"
 let users = document.getElementById('user-names')
@@ -101,41 +143,23 @@ document.addEventListener('keypress', (e) => {
 })
 
 function addNewMessage() {
-    let messageDiv = document.createElement('div')
-    messageDiv.className = "message-div"
-    let profileImg = document.createElement('img')
-    profileImg.src = "../images/default-profile-pic.png"
-    profileImg.style.height = "20px"
-    profileImg.style.width = "20px"
-    let fullName = document.createElement('label')
-
-    let message = document.createElement('label')
-    message.className = "message-p"
-    message.innerText = inputMessage.value
-    if (!message.innerText) {
+    if (inputMessage.value == "") {
         return
     }
-    messageDiv.appendChild(profileImg)
-    messageDiv.appendChild(fullName)
-    messageDiv.appendChild(message)
-    messageBox.appendChild(messageDiv)
-
     onAuthStateChanged(auth, (user) => {
         if (user) {
             //Logged in...
-            fullName.innerHTML = `${user.displayName}: `
-
             addDoc(collection(db, "messages"), {
-                text: message.innerText,
+                text: inputMessage.value,
                 timestamp: Date.now(),
-                user_id: user.uid,
+                user: user.displayName
+                    //todo: add profile pic reference?
             });
+            inputMessage.value = ""
         } else {
             //Logged out...
         }
     });
-
-    inputMessage.value = ""
 }
 
 const logout = document.getElementById('logout')
