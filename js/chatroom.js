@@ -2,11 +2,10 @@ import { auth } from './firebase.js'
 import { db } from './firebase.js'
 import { storageDb } from './firebase.js'
 import { doc, collection, setDoc, addDoc, deleteDoc, query, onSnapshot, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
-import { signOut, onAuthStateChanged, updateProfile  } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+import { signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 import { ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-storage.js";
 let htmlBody = document.querySelector('body')
 let userList = document.getElementById('user-list')
-//TODO umjesto 'images/default-profile-pic.png' ide na 'images/' + user.fileName
 const profilePicRef = ref(storageDb, 'images/default-profile-pic.png')
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -15,32 +14,20 @@ onAuthStateChanged(auth, (user) => {
         setDoc(doc(db, "users", user.uid), {
             user_name: user.displayName
         });
-        getDownloadURL(profilePicRef)
-        .then((url) => {
-            updateProfile(user, {
-               photoURL : url
-            })
-        }).catch((error) => {
-            alert(error.message)
-        });
         //users in chat
         const users = query(collection(db, "users"));
         onSnapshot(users, (usersSnapshot) => {
-            userList.innerHTML = ""
-            usersSnapshot.forEach((user) => {
+            userList.innerHTML = "" //refresh connected users
+            usersSnapshot.forEach((userr) => {
                 let userDisplay = document.createElement('li')
                 let userDiv = document.createElement('div')
                 let nameUser = document.createElement('label')
-                nameUser.innerHTML = user.data().user_name
+                nameUser.innerHTML = userr.data().user_name
 
                 let profImg = document.createElement('img')
                 profImg.style.height = "20px"
                 profImg.style.width = "20px"
-
-                getDownloadURL(profilePicRef)
-                .then((url) => {
-                    profImg.src = url
-                })
+                profImg.src = user.photoURL
 
                 userDiv.appendChild(profImg)
                 userDiv.appendChild(nameUser)
@@ -54,10 +41,10 @@ onAuthStateChanged(auth, (user) => {
         onSnapshot(q, (messages) => {
             messages.docChanges().forEach((change) => {
                 if (change.type === "added") {
-            
+
                     let messageDiv = document.createElement('div')
                     messageDiv.className = "message-div"
-                    //TODO dodati za sliku po uzoru na listu gore 
+
                     let profileImg = document.createElement('img')
                     profileImg.src = user.photoURL
                     profileImg.style.height = "20px"
@@ -77,10 +64,7 @@ onAuthStateChanged(auth, (user) => {
                 }
             });
         });
-    } else {
-        //Logged out...
     }
-
 });
 
 let chatRoom = document.createElement('div')
@@ -126,7 +110,6 @@ document.addEventListener('keypress', (e) => {
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     }
-
 })
 
 function addNewMessage() {
@@ -140,11 +123,8 @@ function addNewMessage() {
                 text: inputMessage.value,
                 timestamp: Date.now(),
                 user: user.displayName
-                    //todo: add profile pic reference?
             });
             inputMessage.value = ""
-        } else {
-            //Logged out...
         }
     });
 }
