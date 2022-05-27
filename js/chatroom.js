@@ -1,18 +1,28 @@
 import { auth } from './firebase.js'
 import { db } from './firebase.js'
+import { storageDb } from './firebase.js'
 import { doc, collection, setDoc, addDoc, deleteDoc, query, onSnapshot, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
-import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
-
+import { signOut, onAuthStateChanged, updateProfile  } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+import { ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-storage.js";
 let htmlBody = document.querySelector('body')
 let userList = document.getElementById('user-list')
-
+//TODO umjesto 'images/default-profile-pic.png' ide na 'images/' + user.fileName
+const profilePicRef = ref(storageDb, 'images/default-profile-pic.png')
 onAuthStateChanged(auth, (user) => {
     if (user) {
         //Logged in...
+        console.log(user)
         setDoc(doc(db, "users", user.uid), {
             user_name: user.displayName
         });
-
+        getDownloadURL(profilePicRef)
+        .then((url) => {
+            updateProfile(user, {
+               photoURL : url
+            })
+        }).catch((error) => {
+            alert(error.message)
+        });
         //users in chat
         const users = query(collection(db, "users"));
         onSnapshot(users, (usersSnapshot) => {
@@ -24,9 +34,13 @@ onAuthStateChanged(auth, (user) => {
                 nameUser.innerHTML = user.data().user_name
 
                 let profImg = document.createElement('img')
-                profImg.src = "../images/default-profile-pic.png"
                 profImg.style.height = "20px"
                 profImg.style.width = "20px"
+
+                getDownloadURL(profilePicRef)
+                .then((url) => {
+                    profImg.src = url
+                })
 
                 userDiv.appendChild(profImg)
                 userDiv.appendChild(nameUser)
@@ -40,12 +54,12 @@ onAuthStateChanged(auth, (user) => {
         onSnapshot(q, (messages) => {
             messages.docChanges().forEach((change) => {
                 if (change.type === "added") {
-                    console.log(change.doc.data());
+            
                     let messageDiv = document.createElement('div')
                     messageDiv.className = "message-div"
-
+                    //TODO dodati za sliku po uzoru na listu gore 
                     let profileImg = document.createElement('img')
-                    profileImg.src = "../images/default-profile-pic.png"
+                    profileImg.src = user.photoURL
                     profileImg.style.height = "20px"
                     profileImg.style.width = "20px"
 
@@ -68,33 +82,6 @@ onAuthStateChanged(auth, (user) => {
     }
 
 });
-
-async function getMessages() {
-    const msgCollection = query(collection(db, "messages"), orderBy("timestamp"))
-    const messages = await getDocs(msgCollection)
-    messages.forEach((doc) => {
-        let messageDiv = document.createElement('div')
-        messageDiv.className = "message-div"
-
-        let profileImg = document.createElement('img')
-        profileImg.src = "../images/default-profile-pic.png"
-        profileImg.style.height = "20px"
-        profileImg.style.width = "20px"
-
-        let fullName = document.createElement('label')
-        fullName.innerHTML = `${doc.data().user}: `
-
-        let message = document.createElement('label')
-        message.className = "message-p"
-        message.innerText = doc.data().text
-
-        messageDiv.appendChild(profileImg)
-        messageDiv.appendChild(fullName)
-        messageDiv.appendChild(message)
-        messageBox.appendChild(messageDiv)
-    })
-}
-
 
 let chatRoom = document.createElement('div')
 chatRoom.className = "chat-room"
