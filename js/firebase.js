@@ -1,20 +1,7 @@
-        // TODO promjeniti na cloud firestore umjesto database te dodati funkcionalnosti
-        
-        // Import the functions you need from the SDKs you need
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-analytics.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
-        import { getFirestore} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
-        import { getStorage} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-storage.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-
-        // Your web app's Firebase configuration
-
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-storage.js";
 
         const firebaseConfig = {
 
@@ -38,7 +25,6 @@
         // Initialize Firebase
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         export const auth = getAuth(app)
         export const db = getFirestore(app)
         export const storageDb = getStorage(app)

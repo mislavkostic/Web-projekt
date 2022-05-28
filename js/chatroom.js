@@ -1,33 +1,36 @@
 import { auth } from './firebase.js'
 import { db } from './firebase.js'
-import { storageDb } from './firebase.js'
-import { doc, collection, setDoc, addDoc, deleteDoc, query, onSnapshot, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
-import { signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
-import { ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-storage.js";
+import { doc, collection, setDoc, addDoc, deleteDoc, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js";
+import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+
 let htmlBody = document.querySelector('body')
 let userList = document.getElementById('user-list')
-const profilePicRef = ref(storageDb, 'images/default-profile-pic.png')
+const logout = document.getElementById('logout')
+
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        //Logged in...
         console.log(user)
+            //--------------- add user to db ---------------
         setDoc(doc(db, "users", user.uid), {
-            user_name: user.displayName
+            user_name: user.displayName,
+            uid: user.uid,
+            photoURL: user.photoURL
         });
-        //users in chat
+
+        //--------------- users in chat ---------------
         const users = query(collection(db, "users"));
         onSnapshot(users, (usersSnapshot) => {
-            userList.innerHTML = "" //refresh connected users
-            usersSnapshot.forEach((userr) => {
+            userList.innerHTML = "" //refresh connected users list
+            usersSnapshot.forEach((user) => {
                 let userDisplay = document.createElement('li')
                 let userDiv = document.createElement('div')
                 let nameUser = document.createElement('label')
-                nameUser.innerHTML = userr.data().user_name
+                nameUser.innerHTML = user.data().user_name
 
                 let profImg = document.createElement('img')
                 profImg.style.height = "20px"
                 profImg.style.width = "20px"
-                profImg.src = user.photoURL
+                profImg.src = user.data().photoURL
 
                 userDiv.appendChild(profImg)
                 userDiv.appendChild(nameUser)
@@ -46,7 +49,7 @@ onAuthStateChanged(auth, (user) => {
                     messageDiv.className = "message-div"
 
                     let profileImg = document.createElement('img')
-                    profileImg.src = user.photoURL
+                    profileImg.src = change.doc.data().photoURL
                     profileImg.style.height = "20px"
                     profileImg.style.width = "20px"
 
@@ -61,16 +64,30 @@ onAuthStateChanged(auth, (user) => {
                     messageDiv.appendChild(fullName)
                     messageDiv.appendChild(message)
                     messageBox.appendChild(messageDiv)
+
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
                 }
             });
         });
+
+        //--------------- logout ---------------
+        logout.addEventListener('click', (e) => {
+            e.preventDefault()
+            deleteDoc(doc(db, "users", user.uid)).then(() => {
+                signOut(auth).then(() => {
+                    location.replace("../html/login.html")
+                })
+            }).catch((error) => {
+                alert(error.message)
+            });
+        })
     }
 });
 
 let chatRoom = document.createElement('div')
 chatRoom.className = "chat-room"
-let users = document.getElementById('user-names')
-chatRoom.appendChild(users)
+let usersDiv = document.getElementById('user-names')
+chatRoom.appendChild(usersDiv)
 let chatTitle = document.createElement('div')
 chatTitle.innerText = "Bubbles"
 chatTitle.className = "chat-title"
@@ -94,8 +111,8 @@ let buttonSendMessage = document.createElement('button')
 buttonSendMessage.innerText = "Send"
 buttonSendMessage.addEventListener('click', () => {
     addNewMessage()
-    chatWindow.scrollTop = chatWindow.scrollHeight;
 })
+
 chatRoom.appendChild(chatWindow)
 inputBox.appendChild(inputMessage)
 inputBox.appendChild(buttonSendMessage)
@@ -107,10 +124,10 @@ document.addEventListener('keypress', (e) => {
     if (e.key === "Enter") {
         if (e.target.className == "message-input") {
             addNewMessage()
-            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     }
 })
+
 
 function addNewMessage() {
     if (inputMessage.value == "") {
@@ -118,24 +135,14 @@ function addNewMessage() {
     }
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            //Logged in...
+            //--------------- add new message 'document' to db ---------------
             addDoc(collection(db, "messages"), {
                 text: inputMessage.value,
                 timestamp: Date.now(),
-                user: user.displayName
+                user: user.displayName,
+                photoURL: user.photoURL
             });
             inputMessage.value = ""
         }
     });
 }
-
-const logout = document.getElementById('logout')
-logout.addEventListener('click', (e) => {
-    e.preventDefault()
-    onAuthStateChanged(auth, (user) => { deleteDoc(doc(db, "users", user.uid)) });
-    signOut(auth).then(() => {
-        location.replace("../html/login.html")
-    }).catch((error) => {
-        alert(error.message)
-    });
-})
