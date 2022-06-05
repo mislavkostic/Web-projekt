@@ -69,7 +69,7 @@ onAuthStateChanged(auth, (user) => {
                 }
             });
         });
-
+        
         //--------------- logout ---------------
         logout.addEventListener('click', (e) => {
             e.preventDefault()
@@ -81,6 +81,14 @@ onAuthStateChanged(auth, (user) => {
                 alert(error.message)
             });
         })
+        window.onbeforeunload = function(){ 
+            deleteDoc(doc(db, "users", user.uid)).then(() => {
+        }).catch((error) => {
+            alert(error.message)
+        }); }
+    }
+    else{
+        location.replace("../html/login.html")
     }
 });
 

@@ -1,4 +1,4 @@
-/* TODO urediti chatroom, napraviti modernije */
+/* TODO responzivnost za tablet, desktop, laptop */
 nav{
     display: flex;
     justify-content: space-between;
@@ -28,16 +28,18 @@ nav li:hover{
     text-align: center;
 }
 .chat-room{
-    margin-left: 25%;
-    margin-right: 25%;
+    margin: 0 20% 0 20%;
     display: flex;
 }
 #user-names{
-    width: 25%;
+    width: 30%;
     background-color: #d9d9d9;
     border: 1px solid black;
     border-bottom: none;
     border-right: none;
+}
+#user-list li{
+    list-style: none;
 }
 .chat-window{
     width: 100%;
@@ -49,8 +51,7 @@ nav li:hover{
 }
 
 .input-box{
-    margin-left: 25%;
-    margin-right: 25%;
+    margin: 0 20% 20% 20%;
     text-align: center;
     background-color: #999;
     border: 1px solid black;
@@ -66,4 +67,19 @@ nav li:hover{
 
 .message-p{
     overflow-wrap: break-word;
+}
+@media screen and (max-width:768px) {
+    #user-names{
+        width: 50%;
+        margin: 0;
+    }
+    .chat-window, .input-box ,.chat-room{
+        margin: 0;
+    }
+    .chat-window{
+        max-height: 450px;
+    }
+    .message-box{
+        height: 400px;
+    }
 }
